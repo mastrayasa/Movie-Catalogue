@@ -1,8 +1,17 @@
 <resources>
-    <string name="app_name">Submission 3</string>
+    <string name="app_name">Submission 4</string>
     <string name="language">Bahasa</string>
     <string name="title_movies">Movies</string>
     <string name="title_tv_show">Tv Show</string>
     <string name="title_detail_tv_show">Detail Tv Show</string>
     <string name="title_detail_film">Detail Movie</string>
+    <string name="title_favorite">Favorite</string>
+
+
+    <string name="tab_film">Movie</string>
+    <string name="tab_tv">Tv Show</string>
+    <string name="data_not_found_movie">Not found data Movie</string>
+    <string name="data_not_found_tv">Not Found data Tv</string>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 </resources>

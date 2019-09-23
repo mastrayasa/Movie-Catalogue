@@ -32,4 +32,6 @@
         android:maxLines="3"
         tools:text="Ini sinopsis" />
 
+
+
 </RelativeLayout>

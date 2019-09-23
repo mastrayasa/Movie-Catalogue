@@ -6,4 +6,9 @@
     <string name="language">Bahasa</string>
     <string name="title_detail_tv_show">Detail Serial Tv</string>
     <string name="title_detail_film">Detail Film</string>
+    <string name="tab_film">Filem</string>
+    <string name="tab_tv">Serial TV</string>
+    <string name="title_favorite">Kesukaan</string>
+    <string name="data_not_found_movie">Data filem kesukaan tidak ada</string>
+    <string name="data_not_found_tv">Data serial tv kesukaan tidak ada</string>
 </resources>

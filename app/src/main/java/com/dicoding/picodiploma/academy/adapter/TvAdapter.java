@@ -39,7 +39,7 @@ public class TvAdapter extends RecyclerView.Adapter<TvAdapter.CategoryViewHolder
         categoryViewHolder.tvName.setText(mTvList.get(position).getName());
         categoryViewHolder.txtDescription.setText(mTvList.get(position).getOverview());
 
-        String image = "http://image.tmdb.org/t/p/w342" + mTvList.get(position).getPoster_path();
+        String image = "https://image.tmdb.org/t/p/w342" + mTvList.get(position).getPoster_path();
 
         Picasso.get()
                 .load(image)

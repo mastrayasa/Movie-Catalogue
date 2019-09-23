@@ -2,24 +2,35 @@ package com.dicoding.picodiploma.academy;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dicoding.picodiploma.academy.database.FilmHelper;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_FILM = "extra_film";
 
+    private FilmHelper filmHelper;
+    Film film;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Film film = getIntent().getParcelableExtra(EXTRA_FILM);
+        filmHelper = FilmHelper.getInstance(getApplicationContext());
+        filmHelper.open();
+
+        film = getIntent().getParcelableExtra(EXTRA_FILM);
 
         setTitle(getResources().getString(R.string.title_detail_film));
         if (getSupportActionBar() != null) {
@@ -40,7 +51,9 @@ public class DetailActivity extends AppCompatActivity {
         txtScore.setText(film.getPopularity());
         txtRilis.setText(film.getRelease_date());
 
-        String image = "http://image.tmdb.org/t/p/w342" + film.getPoster_path();
+      //  Log.e("IMG", film.getPoster_path() );
+
+        String image = "https://image.tmdb.org/t/p/w342" + film.getPoster_path();
 
         Picasso.get()
                 .load(image)
@@ -56,6 +69,33 @@ public class DetailActivity extends AppCompatActivity {
         if (menuItem.getItemId() == android.R.id.home) {
             finish();
         }
+
+        else if(menuItem.getItemId() ==R.id.action_favorite){
+
+            saveToVaforite();
+
+
+        }
         return super.onOptionsItemSelected(menuItem);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_favorite, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void saveToVaforite(){
+        long result = filmHelper.insert(film);
+        Log.e("IMG", film.getPoster_path() );
+        Log.e("IMG", film.getPoster_path() );
+
+        if (result > 0) {
+            Toast.makeText(DetailActivity.this, film.getTitle() + "  ditambahkan ke favorit", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(DetailActivity.this, "Gagal menambah data", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

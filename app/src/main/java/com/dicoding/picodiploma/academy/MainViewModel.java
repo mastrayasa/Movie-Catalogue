@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.dicoding.picodiploma.academy.api.ApiInterface;
+import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.database.TvHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,9 @@ public class MainViewModel extends ViewModel {
             }
         });
     }
+    LiveData<List<Tv>> getTvs() {
+        return listTv;
+    }
 
 
     void setListFilm(ApiInterface mApiInterface) {
@@ -64,13 +69,35 @@ public class MainViewModel extends ViewModel {
             }
         });
     }
+
+
+
+
+
+
     LiveData<List<Film>> getFilms() {
         return listFilm;
     }
 
-    LiveData<List<Tv>> getTvs() {
-        return listTv;
+
+
+
+
+    void setListTvFavorite(TvHelper tvHelper) {
+
+        listTv.postValue(tvHelper.getAll());
+
     }
+
+
+    void setListFilmFavorite(FilmHelper filmHelper) {
+
+        listFilm.postValue(filmHelper.getAll());
+
+    }
+
+
+
 
 
 

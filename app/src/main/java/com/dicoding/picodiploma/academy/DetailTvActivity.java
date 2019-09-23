@@ -3,22 +3,33 @@ package com.dicoding.picodiploma.academy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.database.TvHelper;
 import com.squareup.picasso.Picasso;
 
 public class DetailTvActivity extends AppCompatActivity {
 
     public static final String EXTRA_TV = "extra_tv";
 
+    private TvHelper tvHelper;
+    Tv tv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_tv);
 
-        Tv tv = getIntent().getParcelableExtra(EXTRA_TV);
+        tvHelper = TvHelper.getInstance(getApplicationContext());
+        tvHelper.open();
+
+         tv = getIntent().getParcelableExtra(EXTRA_TV);
 
 
         setTitle(getResources().getString(R.string.title_detail_tv_show));
@@ -42,7 +53,7 @@ public class DetailTvActivity extends AppCompatActivity {
         txtScore.setText(tv.getPopularity());
         txtRilis.setText(tv.getRelease_date());
 
-        String image = "http://image.tmdb.org/t/p/w342" + tv.getPoster_path();
+        String image = "https://image.tmdb.org/t/p/w342" + tv.getPoster_path();
 
         Picasso.get()
                 .load(image)
@@ -51,11 +62,37 @@ public class DetailTvActivity extends AppCompatActivity {
                 .into(imgPhoto);
     }
 
+
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
             finish();
         }
+
+        else if(menuItem.getItemId() ==R.id.action_favorite){
+
+            saveToFavorite();
+
+
+        }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_favorite, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void saveToFavorite(){
+        long result = tvHelper.insert(tv);
+
+        if (result > 0) {
+            Toast.makeText(DetailTvActivity.this, tv.getName() + "  ditambahkan ke favorit", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(DetailTvActivity.this, "Gagal menambah data", Toast.LENGTH_SHORT).show();
+        }
     }
 }
