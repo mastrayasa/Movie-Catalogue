@@ -1,6 +1,9 @@
 package com.dicoding.picodiploma.academy;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -51,6 +54,26 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             navigation.setSelectedItemId(R.id.navigation_home);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() ==R.id.action_language){
+            Intent mIntent = new Intent(Settings.ACTION_LOCALE_SETTINGS);
+            startActivity(mIntent);
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

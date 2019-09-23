@@ -6,22 +6,24 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailTvActivity extends AppCompatActivity {
 
-    public static final String EXTRA_FILM = "extra_film";
+    public static final String EXTRA_TV = "extra_tv";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_detail_tv);
 
-        Film film = getIntent().getParcelableExtra(EXTRA_FILM);
+        Tv tv = getIntent().getParcelableExtra(EXTRA_TV);
 
-        setTitle(getResources().getString(R.string.title_detail_film));
+
+        setTitle(getResources().getString(R.string.title_detail_tv_show));
+
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -35,20 +37,18 @@ public class DetailActivity extends AppCompatActivity {
         ImageView imgPhoto = findViewById(R.id.img_photo);
 
 
-        txtName.setText(film.getTitle());
-        txtDescription.setText(film.getOverview());
-        txtScore.setText(film.getPopularity());
-        txtRilis.setText(film.getRelease_date());
+        txtName.setText(tv.getOriginal_name());
+        txtDescription.setText(tv.getOverview());
+        txtScore.setText(tv.getPopularity());
+        txtRilis.setText(tv.getRelease_date());
 
-        String image = "http://image.tmdb.org/t/p/w342" + film.getPoster_path();
+        String image = "http://image.tmdb.org/t/p/w342" + tv.getPoster_path();
 
         Picasso.get()
                 .load(image)
                 .placeholder(R.drawable.poster_placeholder)
                 .error(R.drawable.poster_placeholder_error)
                 .into(imgPhoto);
-
-
     }
 
     @Override

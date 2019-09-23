@@ -2,18 +2,24 @@ package com.dicoding.picodiploma.academy;
 
 
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.ProgressBar;
 
-import java.util.ArrayList;
+import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
+import com.dicoding.picodiploma.academy.api.ApiInterface;
+
+import java.util.List;
 
 
 /**
@@ -21,66 +27,72 @@ import java.util.ArrayList;
  */
 public class MoviesFragment extends Fragment {
 
-    private String[] dataName;
-    private String[] dataDescription;
-    private String[] dataScore;
-    private String[] dataTanggalRilis;
-    private TypedArray dataPhoto;
-    private FilmAdapter adapter;
-    private ArrayList<Film> films;
+    private RecyclerView rvFilm;
+    private ProgressBar progressBar;
 
+    ApiInterface mApiInterface;
+
+    private MainViewModel mainViewModel;
 
     public MoviesFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View rootView =  inflater.inflate(R.layout.fragment_movies, container, false);
 
-        adapter = new FilmAdapter(getActivity());
-        ListView listView = rootView.findViewById(R.id.lv_list);
-        listView.setAdapter(adapter);
+        getActivity().setTitle(getResources().getString(R.string.title_movies));
 
-        prepare();
-        addItem();
+        progressBar = rootView.findViewById(R.id.progressBar);
+        rvFilm = rootView.findViewById(R.id.rv_films);
+        rvFilm.setHasFixedSize(true);
+        mApiInterface = ApiClient.getClient().create(ApiInterface.class);
+        showLoading(true);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(MainActivity.this, films.get(i).getTitle(), Toast.LENGTH_SHORT).show();
-                Intent moveWithObjectIntent = new Intent(getActivity(), DetailActivity.class);
-                moveWithObjectIntent.putExtra(DetailActivity.EXTRA_FILM, films.get(i));
-                startActivity(moveWithObjectIntent);
-            }
-        });
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.getFilms().observe(this, getFilm);
+        mainViewModel.setListFilm(mApiInterface);
 
         return rootView;
     }
 
-    private void addItem() {
-        films = new ArrayList<>();
-        for (int i = 0; i < dataName.length; i++) {
-            Film hero = new Film();
-            hero.setCover(dataPhoto.getResourceId(i, -1));
-            hero.setTitle(dataName[i]);
-            hero.setDes(dataDescription[i]);
-            hero.setScore(dataScore[i]);
-            hero.setRilis(dataTanggalRilis[i]);
-            films.add(hero);
+    private Observer<List<Film>> getFilm = new Observer<List<Film>>() {
+        @Override
+        public void onChanged(final List<Film> list_films) {
+            if (list_films != null) {
+
+                rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
+                FilmAdapter filmAdapter = new FilmAdapter(list_films);
+                rvFilm.setAdapter(filmAdapter);
+
+                ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        showSelectedFilm(list_films.get(position));
+                    }
+                });
+            }
+
+            showLoading(false);
         }
-        adapter.setHeroes(films);
+    };
+
+
+
+    private void showSelectedFilm(Film film){
+        Intent moveWithObjectIntent = new Intent(getActivity(), DetailActivity.class);
+        moveWithObjectIntent.putExtra(DetailActivity.EXTRA_FILM, film);
+        startActivity(moveWithObjectIntent);
     }
 
-    private void prepare() {
-        dataName = getResources().getStringArray(R.array.data_name);
-        dataDescription = getResources().getStringArray(R.array.data_description);
-        dataPhoto = getResources().obtainTypedArray(R.array.data_photo);
-        dataScore = getResources().getStringArray(R.array.data_score);
-        dataTanggalRilis = getResources().getStringArray(R.array.data_rilis);
+    private void showLoading(Boolean state) {
+        if (state) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
 }
