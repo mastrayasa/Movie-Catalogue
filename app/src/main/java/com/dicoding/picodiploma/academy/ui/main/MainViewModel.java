@@ -15,6 +15,7 @@ import com.dicoding.picodiploma.academy.database.TvHelper;
 import com.dicoding.picodiploma.academy.entitas.Film;
 import com.dicoding.picodiploma.academy.entitas.Tv;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -72,7 +73,33 @@ public class MainViewModel extends ViewModel {
     }
 
 
+    public void searchFilm(ApiInterface mApiInterface, String query) {
+
+        Call<GetFilm> kontakCall = mApiInterface.cariFilm(API_KEY, "en-US",query);
+        kontakCall.enqueue(new Callback<GetFilm>() {
+            @Override
+            public void onResponse(Call<GetFilm> call, Response<GetFilm> response) {
+
+                List<Film> list_films;
+                list_films = response.body().getListFilm();
+                listFilm.postValue(list_films);
+            }
+
+            @Override
+            public void onFailure(Call<GetFilm> call, Throwable t) {
+                Log.e("Retrofit Get", t.toString());
+            }
+        });
+    }
+
+    public void clearMovie(){
+        //List<Film> list_films = new ArrayList<Film>();
+        listFilm.postValue(null);
+    }
+
+
     public LiveData<List<Film>> getFilms() {
+
         return listFilm;
     }
 

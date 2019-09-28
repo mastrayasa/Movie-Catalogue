@@ -1,9 +1,14 @@
 package com.dicoding.picodiploma.academy;
 
 
+import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -11,11 +16,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
 import com.dicoding.picodiploma.academy.api.ApiClient;
@@ -34,7 +45,7 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
     private RecyclerView rvFilm;
     private ProgressBar progressBar;
     FilmAdapter filmAdapter;
-
+    private TextView not_found;
 
     ApiInterface mApiInterface;
 
@@ -51,7 +62,9 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
 
         getActivity().setTitle(getResources().getString(R.string.title_movies));
 
+        setHasOptionsMenu(true);
 
+        not_found = rootView.findViewById(R.id.not_found);
         progressBar = rootView.findViewById(R.id.progressBar);
         rvFilm = rootView.findViewById(R.id.rv_films);
         rvFilm.setHasFixedSize(true);
@@ -71,6 +84,59 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+
+       SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+
+       if (searchManager != null) {
+            SearchView searchView = (SearchView) (menu.findItem(R.id.action_search)).getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo( getActivity().getComponentName()));
+            searchView.setQueryHint(getResources().getString(R.string.search_hint));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    //Toast.makeText(getActivity(), query, Toast.LENGTH_SHORT).show();
+                    DataNotFound(false);
+                    //mainViewModel.clearMovie();
+                    showLoading(true);
+                    mainViewModel.searchFilm(mApiInterface,query);
+                    showLoading(true);
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextChange(String query) {
+                    //Toast.makeText(getActivity(), query, Toast.LENGTH_SHORT).show();
+                    Log.e("QQQ", query );
+                    return false;
+                }
+
+
+            });
+
+
+        }
+    }
+
+    /*@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() ==R.id.action_search){
+            Intent moveWithObjectIntent = new Intent(getActivity(), SearchMovieActivity.class);
+            startActivity(moveWithObjectIntent);
+
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }*/
+
+
+
+
     private Observer<List<Film>> getFilm = new Observer<List<Film>>() {
         @Override
         public void onChanged(final List<Film> list_films) {
@@ -84,8 +150,13 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
                         showSelectedFilm(list_films.get(position));
                     }
                 });
-            }
 
+                if(list_films.size() == 0){
+                    Log.e("TAG", "Tidak ada data");
+                    DataNotFound(true);
+                }
+            }
+            Log.e("onChanged", "getFilm" );
             showLoading(false);
         }
     };
@@ -108,5 +179,17 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
     @Override
     public void onDeleteItem(int pos) {
         Log.e("aaaa", pos + "");
+    }
+
+    private void DataNotFound(Boolean state) {
+        if (state) {
+            progressBar.setVisibility(View.GONE);
+            rvFilm.setVisibility(View.GONE);
+            not_found.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            rvFilm.setVisibility(View.VISIBLE);
+            not_found.setVisibility(View.GONE);
+        }
     }
 }

@@ -12,6 +12,7 @@
     <string name="tab_tv">Tv Show</string>
     <string name="data_not_found_movie">Not found data Movie</string>
     <string name="data_not_found_tv">Not Found data Tv</string>
+    <string name="search_hint">Masukkan kata</string>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 </resources>
