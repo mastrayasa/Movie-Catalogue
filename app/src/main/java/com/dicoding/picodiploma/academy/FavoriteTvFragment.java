@@ -17,10 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
 import com.dicoding.picodiploma.academy.adapter.TvAdapter;
-import com.dicoding.picodiploma.academy.database.FilmHelper;
 import com.dicoding.picodiploma.academy.database.TvHelper;
+import com.dicoding.picodiploma.academy.entitas.Tv;
+import com.dicoding.picodiploma.academy.ui.main.MainViewModel;
 
 import java.util.List;
 
@@ -28,15 +28,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteTvFragment extends Fragment {
+public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnClickHandler {
 
     private TvHelper tvHelper;
-    Tv tv;
-
-    private RecyclerView rvFilm;
+    private RecyclerView rvTv;
     private ProgressBar progressBar;
     private TextView not_found;
     private MainViewModel mainViewModel;
+    private TvAdapter tvAdapter;
 
     public FavoriteTvFragment() {
         // Required empty public constructor
@@ -57,8 +56,12 @@ public class FavoriteTvFragment extends Fragment {
 
         not_found = rootView.findViewById(R.id.not_found);
         progressBar = rootView.findViewById(R.id.progressBar);
-        rvFilm = rootView.findViewById(R.id.rv_films);
-        rvFilm.setHasFixedSize(true);
+        rvTv = rootView.findViewById(R.id.rv_films);
+        rvTv.setHasFixedSize(true);
+
+        rvTv.setLayoutManager(new LinearLayoutManager(getActivity()));
+        tvAdapter = new TvAdapter(true,this);
+        rvTv.setAdapter(tvAdapter);
 
         showLoading(true);
 
@@ -71,25 +74,23 @@ public class FavoriteTvFragment extends Fragment {
 
     private Observer<List<Tv>> getTv = new Observer<List<Tv>>() {
         @Override
-        public void onChanged(final List<Tv> list_tv) {
+        public void onChanged(final List<Tv> list_tvs) {
 
             Log.e("TAG", "ini tag");
-            if (list_tv != null) {
+            if (list_tvs != null) {
 
-                rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
-                TvAdapter tvAdapter = new TvAdapter(list_tv);
-                rvFilm.setAdapter(tvAdapter);
+                tvAdapter.setData(list_tvs);
 
-                ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                ItemClickSupport.addTo(rvTv).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        showSelectedFilm(list_tv.get(position));
+                        showSelectedFilm(list_tvs.get(position));
                     }
                 });
 
-                if(list_tv.size() == 0){
+                if(list_tvs.size() == 0){
                     Log.e("TAG", "Tidak ada data");
-                    TidakAdaData(true);
+                    DataNotFound(true);
                 }
 
             }
@@ -115,16 +116,26 @@ public class FavoriteTvFragment extends Fragment {
         }
     }
 
-    private void TidakAdaData(Boolean state) {
+    private void DataNotFound(Boolean state) {
         if (state) {
             progressBar.setVisibility(View.GONE);
-            rvFilm.setVisibility(View.GONE);
+            rvTv.setVisibility(View.GONE);
             not_found.setVisibility(View.VISIBLE);
         } else {
             progressBar.setVisibility(View.VISIBLE);
-            rvFilm.setVisibility(View.VISIBLE);
+            rvTv.setVisibility(View.VISIBLE);
             not_found.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onDeleteItem(int position) {
+        Log.e("delete", position + "" );
+
+        Tv deleteItem = tvAdapter.getItem(position);
+        tvHelper.delete( Integer.parseInt(deleteItem.getId()));
+
+        mainViewModel.setListTvFavorite(tvHelper);
     }
 
 }

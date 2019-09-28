@@ -3,15 +3,14 @@ package com.dicoding.picodiploma.academy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dicoding.picodiploma.academy.database.FilmHelper;
 import com.dicoding.picodiploma.academy.database.TvHelper;
+import com.dicoding.picodiploma.academy.entitas.Tv;
 import com.squareup.picasso.Picasso;
 
 public class DetailTvActivity extends AppCompatActivity {
@@ -19,7 +18,7 @@ public class DetailTvActivity extends AppCompatActivity {
     public static final String EXTRA_TV = "extra_tv";
 
     private TvHelper tvHelper;
-    Tv tv;
+    private Tv tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

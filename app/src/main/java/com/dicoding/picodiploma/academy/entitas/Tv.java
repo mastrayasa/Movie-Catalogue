@@ -1,23 +1,24 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.entitas;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Film implements Parcelable {
+public class Tv implements Parcelable {
 
     @SerializedName("id")
     private String id;
     @SerializedName("vote_average")
     private String vote_average;
-    @SerializedName("title")
-    private String title;
+    @SerializedName("name")
+    private String name;
     @SerializedName("popularity")
     private String popularity;
     @SerializedName("poster_path")
     private String poster_path;
-    @SerializedName("original_title")
-    private String original_title;
+    @SerializedName("original_name")
+    private String original_name;
     @SerializedName("backdrop_path")
     private String backdrop_path;
     @SerializedName("overview")
@@ -25,17 +26,6 @@ public class Film implements Parcelable {
     @SerializedName("release_date")
     private String release_date;
 
-    public Film(String id, String vote_average, String title, String popularity, String poster_path, String original_title, String backdrop_path, String overview, String release_date) {
-        this.id = id;
-        this.vote_average = vote_average;
-        this.title = title;
-        this.popularity = popularity;
-        this.poster_path = poster_path;
-        this.original_title = original_title;
-        this.backdrop_path = backdrop_path;
-        this.overview = overview;
-        this.release_date = release_date;
-    }
 
     public String getId() {
         return id;
@@ -53,12 +43,12 @@ public class Film implements Parcelable {
         this.vote_average = vote_average;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPopularity() {
@@ -77,12 +67,12 @@ public class Film implements Parcelable {
         this.poster_path = poster_path;
     }
 
-    public String getOriginal_title() {
-        return original_title;
+    public String getOriginal_name() {
+        return original_name;
     }
 
-    public void setOriginal_title(String original_title) {
-        this.original_title = original_title;
+    public void setOriginal_name(String original_name) {
+        this.original_name = original_name;
     }
 
     public String getBackdrop_path() {
@@ -109,6 +99,7 @@ public class Film implements Parcelable {
         this.release_date = release_date;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -118,39 +109,39 @@ public class Film implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.id);
         dest.writeString(this.vote_average);
-        dest.writeString(this.title);
+        dest.writeString(this.name);
         dest.writeString(this.popularity);
         dest.writeString(this.poster_path);
-        dest.writeString(this.original_title);
+        dest.writeString(this.original_name);
         dest.writeString(this.backdrop_path);
         dest.writeString(this.overview);
         dest.writeString(this.release_date);
     }
 
-    public Film() {
+    public Tv() {
     }
 
-    protected Film(Parcel in) {
+    protected Tv(Parcel in) {
         this.id = in.readString();
         this.vote_average = in.readString();
-        this.title = in.readString();
+        this.name = in.readString();
         this.popularity = in.readString();
         this.poster_path = in.readString();
-        this.original_title = in.readString();
+        this.original_name = in.readString();
         this.backdrop_path = in.readString();
         this.overview = in.readString();
         this.release_date = in.readString();
     }
 
-    public static final Creator<Film> CREATOR = new Creator<Film>() {
+    public static final Creator<Tv> CREATOR = new Creator<Tv>() {
         @Override
-        public Film createFromParcel(Parcel source) {
-            return new Film(source);
+        public Tv createFromParcel(Parcel source) {
+            return new Tv(source);
         }
 
         @Override
-        public Film[] newArray(int size) {
-            return new Film[size];
+        public Tv[] newArray(int size) {
+            return new Tv[size];
         }
     };
 }

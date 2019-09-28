@@ -1,4 +1,4 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.api;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

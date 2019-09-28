@@ -1,19 +1,20 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.ui.main;
 
 import android.util.Log;
-import android.view.View;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.dicoding.picodiploma.academy.BuildConfig;
 import com.dicoding.picodiploma.academy.api.ApiInterface;
+import com.dicoding.picodiploma.academy.api.GetFilm;
+import com.dicoding.picodiploma.academy.api.GetTv;
 import com.dicoding.picodiploma.academy.database.FilmHelper;
 import com.dicoding.picodiploma.academy.database.TvHelper;
+import com.dicoding.picodiploma.academy.entitas.Film;
+import com.dicoding.picodiploma.academy.entitas.Tv;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -27,10 +28,9 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<List<Tv>> listTv = new MutableLiveData<>();
 
 
+    public void setListTv(ApiInterface mApiInterface) {
 
-    void setListTv(ApiInterface mApiInterface) {
-
-        Call<GetTv> kontakCall = mApiInterface.getTv(API_KEY,"en-US");
+        Call<GetTv> kontakCall = mApiInterface.getTv(API_KEY, "en-US");
         kontakCall.enqueue(new Callback<GetTv>() {
             @Override
             public void onResponse(Call<GetTv> call, Response<GetTv> response) {
@@ -46,14 +46,15 @@ public class MainViewModel extends ViewModel {
             }
         });
     }
-    LiveData<List<Tv>> getTvs() {
+
+    public LiveData<List<Tv>> getTvs() {
         return listTv;
     }
 
 
-    void setListFilm(ApiInterface mApiInterface) {
+    public void setListFilm(ApiInterface mApiInterface) {
 
-        Call<GetFilm> kontakCall = mApiInterface.getFilm(API_KEY,"en-US");
+        Call<GetFilm> kontakCall = mApiInterface.getFilm(API_KEY, "en-US");
         kontakCall.enqueue(new Callback<GetFilm>() {
             @Override
             public void onResponse(Call<GetFilm> call, Response<GetFilm> response) {
@@ -71,34 +72,23 @@ public class MainViewModel extends ViewModel {
     }
 
 
-
-
-
-
-    LiveData<List<Film>> getFilms() {
+    public LiveData<List<Film>> getFilms() {
         return listFilm;
     }
 
 
-
-
-
-    void setListTvFavorite(TvHelper tvHelper) {
+    public void setListTvFavorite(TvHelper tvHelper) {
 
         listTv.postValue(tvHelper.getAll());
 
     }
 
 
-    void setListFilmFavorite(FilmHelper filmHelper) {
+    public void setListFilmFavorite(FilmHelper filmHelper) {
 
         listFilm.postValue(filmHelper.getAll());
 
     }
-
-
-
-
 
 
 }

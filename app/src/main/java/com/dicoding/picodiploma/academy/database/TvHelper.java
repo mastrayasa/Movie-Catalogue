@@ -6,15 +6,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import com.dicoding.picodiploma.academy.Film;
-import com.dicoding.picodiploma.academy.Tv;
-
+import com.dicoding.picodiploma.academy.entitas.Tv;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TvHelper {
 
+    private String susu;
     private static final String DATABASE_TABLE =  DatabaseContract.TvColumns.TABLE_TV;
     private static DatabaseHelper dataBaseHelper;
     private static TvHelper INSTANCE;
@@ -84,6 +82,7 @@ public class TvHelper {
     public long insert(Tv film) {
         ContentValues args = new ContentValues();
 
+        args.put(DatabaseContract.TvColumns._ID, film.getId());
         args.put(DatabaseContract.TvColumns.name, film.getName());
         args.put(DatabaseContract.TvColumns.overview, film.getOverview());
         args.put(DatabaseContract.TvColumns.release_date, film.getRelease_date());
@@ -107,6 +106,8 @@ public class TvHelper {
         args.put(DatabaseContract.TvColumns.backdrop_path, film.getBackdrop_path());
         return database.update(DATABASE_TABLE, args, DatabaseContract.TvColumns._ID + "= '" + film.getId() + "'", null);
     }
+
+
 
     public int delete(int id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.TvColumns._ID + " = '" + id + "'", null);

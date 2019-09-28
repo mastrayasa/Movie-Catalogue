@@ -1,11 +1,7 @@
 package com.dicoding.picodiploma.academy;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -13,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.entitas.Film;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -20,7 +17,8 @@ public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_FILM = "extra_film";
 
     private FilmHelper filmHelper;
-    Film film;
+    private Film film;
+    private boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +49,7 @@ public class DetailActivity extends AppCompatActivity {
         txtScore.setText(film.getPopularity());
         txtRilis.setText(film.getRelease_date());
 
-      //  Log.e("IMG", film.getPoster_path() );
+        //  Log.e("IMG", film.getPoster_path() );
 
         String image = "https://image.tmdb.org/t/p/w342" + film.getPoster_path();
 
@@ -61,6 +59,8 @@ public class DetailActivity extends AppCompatActivity {
                 .error(R.drawable.poster_placeholder_error)
                 .into(imgPhoto);
 
+        isFavorite = filmHelper.isFavorite(film.getId());
+
 
     }
 
@@ -68,9 +68,7 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
             finish();
-        }
-
-        else if(menuItem.getItemId() ==R.id.action_favorite){
+        } else if (menuItem.getItemId() == R.id.action_favorite) {
 
             saveToVaforite();
 
@@ -85,16 +83,22 @@ public class DetailActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void saveToVaforite(){
-        long result = filmHelper.insert(film);
-        Log.e("IMG", film.getPoster_path() );
-        Log.e("IMG", film.getPoster_path() );
+    private void saveToVaforite() {
 
-        if (result > 0) {
-            Toast.makeText(DetailActivity.this, film.getTitle() + "  ditambahkan ke favorit", Toast.LENGTH_SHORT).show();
+        if (isFavorite) {
+            Toast.makeText(DetailActivity.this, "Anda sudah menyukai ini", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(DetailActivity.this, "Gagal menambah data", Toast.LENGTH_SHORT).show();
+
+            long result = filmHelper.insert(film);
+
+            if (result > 0) {
+                isFavorite = true;
+                Toast.makeText(DetailActivity.this, film.getTitle() + "  ditambahkan ke favorit", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(DetailActivity.this, "Gagal menambah data", Toast.LENGTH_SHORT).show();
+            }
         }
+
     }
 
 

@@ -7,7 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.dicoding.picodiploma.academy.Film;
+import com.dicoding.picodiploma.academy.entitas.Film;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +43,38 @@ public class FilmHelper {
             database.close();
     }
 
+    public boolean isFavorite(String id){
+
+        boolean a = false;
+
+        String mSelection = DatabaseContract.MovieColumns._ID + "=?";
+        String[] mSelectionArgs = new String[]{id};
+
+        Cursor cursor = database.query(DATABASE_TABLE,
+                null,
+                mSelection,
+                mSelectionArgs,
+                null,
+                null,
+                DatabaseContract.MovieColumns._ID + " DESC",
+                null);
+        cursor.moveToFirst();
+
+
+        if (cursor.getCount() > 0) {
+            a =  true;
+        }
+
+        cursor.close();
+        return a;
+    }
+
 
     public List<Film> getAll() {
 
         List<Film> arrayList = new ArrayList<>();
-        Cursor cursor = database.query(DATABASE_TABLE, null,
+        Cursor cursor = database.query(DATABASE_TABLE,
+                null,
                 null,
                 null,
                 null,
@@ -82,7 +109,7 @@ public class FilmHelper {
 
     public long insert(Film film) {
         ContentValues args = new ContentValues();
-
+        args.put(DatabaseContract.MovieColumns._ID, film.getId());
         args.put(DatabaseContract.MovieColumns.title, film.getTitle());
         args.put(DatabaseContract.MovieColumns.overview, film.getOverview());
         args.put(DatabaseContract.MovieColumns.release_date, film.getRelease_date());

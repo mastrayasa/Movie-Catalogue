@@ -1,5 +1,6 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.api;
 
+import com.dicoding.picodiploma.academy.entitas.Tv;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

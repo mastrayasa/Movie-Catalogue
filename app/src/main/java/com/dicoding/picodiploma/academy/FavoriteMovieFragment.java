@@ -1,7 +1,6 @@
 package com.dicoding.picodiploma.academy;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,6 +19,8 @@ import android.widget.TextView;
 
 import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
 import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.entitas.Film;
+import com.dicoding.picodiploma.academy.ui.main.MainViewModel;
 
 import java.util.List;
 
@@ -27,11 +28,11 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteMovieFragment extends Fragment {
+public class FavoriteMovieFragment extends Fragment implements FilmAdapter.AdapterOnClickHandler {
 
     private FilmHelper filmHelper;
-    Film film;
-
+    private Film film;
+    FilmAdapter filmAdapter;
     private RecyclerView rvFilm;
     private ProgressBar progressBar;
     private TextView not_found;
@@ -43,12 +44,12 @@ public class FavoriteMovieFragment extends Fragment {
 
     }
 
-    public static FavoriteMovieFragment newInstance() {
+   /* public static FavoriteMovieFragment newInstance() {
         FavoriteMovieFragment fragment = new FavoriteMovieFragment();
         Bundle bundle = new Bundle();
         fragment.setArguments(bundle);
         return fragment;
-    }
+    }*/
 
 
     @Override
@@ -67,6 +68,10 @@ public class FavoriteMovieFragment extends Fragment {
         rvFilm = rootView.findViewById(R.id.rv_films);
         rvFilm.setHasFixedSize(true);
 
+        rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
+        filmAdapter = new FilmAdapter(  true ,this  );
+        rvFilm.setAdapter(filmAdapter);
+
         showLoading(true);
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
@@ -84,9 +89,7 @@ public class FavoriteMovieFragment extends Fragment {
             Log.e("TAG", "ini tag");
             if (list_films != null) {
 
-                rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
-                FilmAdapter filmAdapter = new FilmAdapter(list_films);
-                rvFilm.setAdapter(filmAdapter);
+                filmAdapter.setData(list_films);
 
                 ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
@@ -95,9 +98,12 @@ public class FavoriteMovieFragment extends Fragment {
                     }
                 });
 
+
+
+
                 if(list_films.size() == 0){
                     Log.e("TAG", "Tidak ada data");
-                    TidakAdaData(true);
+                    DataNotFound(true);
                 }
 
 
@@ -105,9 +111,19 @@ public class FavoriteMovieFragment extends Fragment {
 
             showLoading(false);
 
-
         }
+
+
+
+
     };
+
+   /* private void deleteItem(int position){
+        Film theRemovedItem = list_films.get(position);
+        // remove your item from data base
+        mFilmList.remove(position);  // remove the item from list
+        notifyItemRemoved(position);
+    }*/
 
 
     private void showSelectedFilm(Film film){
@@ -124,7 +140,7 @@ public class FavoriteMovieFragment extends Fragment {
         }
     }
 
-    private void TidakAdaData(Boolean state) {
+    private void DataNotFound(Boolean state) {
         if (state) {
             progressBar.setVisibility(View.GONE);
             rvFilm.setVisibility(View.GONE);
@@ -136,4 +152,12 @@ public class FavoriteMovieFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onDeleteItem(int position) {
+        Film deleteItem = filmAdapter.getItem(position);
+        filmHelper.delete( Integer.parseInt(deleteItem.getId()));
+
+        mainViewModel.setListFilmFavorite(filmHelper);
+    }
 }

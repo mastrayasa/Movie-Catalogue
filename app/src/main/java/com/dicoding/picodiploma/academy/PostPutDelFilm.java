@@ -1,5 +1,6 @@
 package com.dicoding.picodiploma.academy;
 
+import com.dicoding.picodiploma.academy.entitas.Film;
 import com.google.gson.annotations.SerializedName;
 
 public class PostPutDelFilm {

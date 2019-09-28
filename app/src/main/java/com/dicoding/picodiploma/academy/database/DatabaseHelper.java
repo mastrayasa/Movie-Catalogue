@@ -10,11 +10,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public static String DATABASE_NAME = "dbmovie";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
 
     private static final String SQL_CREATE_TABLE_MOVIE = String.format("CREATE TABLE %s"
-                    + " (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    + " (%s INTEGER PRIMARY KEY," +
                     " %s TEXT  NULL," +
                     " %s TEXT  NULL," +
                     " %s TEXT  NULL," +
@@ -38,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     private static final String SQL_CREATE_TABLE_TV = String.format("CREATE TABLE %s"
-                    + " (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    + " (%s INTEGER PRIMARY KEY," +
                     " %s TEXT  NULL," +
                     " %s TEXT  NULL," +
                     " %s TEXT  NULL," +

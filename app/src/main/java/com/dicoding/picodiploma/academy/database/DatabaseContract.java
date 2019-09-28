@@ -2,14 +2,8 @@ package com.dicoding.picodiploma.academy.database;
 
 import android.provider.BaseColumns;
 
-import com.google.gson.annotations.SerializedName;
 
 public class DatabaseContract {
-
-
-
-
-
 
     static final class MovieColumns implements BaseColumns {
 

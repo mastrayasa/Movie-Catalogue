@@ -1,6 +1,8 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.api;
 
 import java.util.List;
+
+import com.dicoding.picodiploma.academy.entitas.Film;
 import com.google.gson.annotations.SerializedName;
 
 public class GetFilm {

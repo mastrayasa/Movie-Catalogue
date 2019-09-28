@@ -11,14 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
+import com.dicoding.picodiploma.academy.api.ApiClient;
 import com.dicoding.picodiploma.academy.api.ApiInterface;
-import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.entitas.Film;
+import com.dicoding.picodiploma.academy.ui.main.MainViewModel;
 
 import java.util.List;
 
@@ -26,11 +29,11 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnClickHandler {
 
     private RecyclerView rvFilm;
     private ProgressBar progressBar;
-
+    FilmAdapter filmAdapter;
 
 
     ApiInterface mApiInterface;
@@ -44,18 +47,20 @@ public class MoviesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView =  inflater.inflate(R.layout.fragment_movies, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
         getActivity().setTitle(getResources().getString(R.string.title_movies));
-
-
-
-
 
 
         progressBar = rootView.findViewById(R.id.progressBar);
         rvFilm = rootView.findViewById(R.id.rv_films);
         rvFilm.setHasFixedSize(true);
+
+        rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
+        filmAdapter = new FilmAdapter(false, this);
+        rvFilm.setAdapter(filmAdapter);
+
+
         mApiInterface = ApiClient.getClient().create(ApiInterface.class);
         showLoading(true);
 
@@ -71,9 +76,7 @@ public class MoviesFragment extends Fragment {
         public void onChanged(final List<Film> list_films) {
             if (list_films != null) {
 
-                rvFilm.setLayoutManager(new LinearLayoutManager(getActivity()));
-                FilmAdapter filmAdapter = new FilmAdapter(list_films);
-                rvFilm.setAdapter(filmAdapter);
+                filmAdapter.setData(list_films);
 
                 ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
@@ -88,8 +91,7 @@ public class MoviesFragment extends Fragment {
     };
 
 
-
-    private void showSelectedFilm(Film film){
+    private void showSelectedFilm(Film film) {
         Intent moveWithObjectIntent = new Intent(getActivity(), DetailActivity.class);
         moveWithObjectIntent.putExtra(DetailActivity.EXTRA_FILM, film);
         startActivity(moveWithObjectIntent);
@@ -103,4 +105,8 @@ public class MoviesFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDeleteItem(int pos) {
+        Log.e("aaaa", pos + "");
+    }
 }

@@ -32,6 +32,17 @@
         android:maxLines="3"
         tools:text="Ini sinopsis" />
 
+    <Button
+        android:visibility="gone"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/txt_description"
+        android:layout_toEndOf="@id/img_photo"
+        android:id="@+id/btn_delete"
+        android:text="Hapus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
 
 </RelativeLayout>
