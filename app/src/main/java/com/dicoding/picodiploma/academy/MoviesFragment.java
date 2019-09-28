@@ -120,19 +120,7 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
         }
     }
 
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() ==R.id.action_search){
-            Intent moveWithObjectIntent = new Intent(getActivity(), SearchMovieActivity.class);
-            startActivity(moveWithObjectIntent);
-
-
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
 
 

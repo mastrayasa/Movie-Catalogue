@@ -48,6 +48,26 @@ public class MainViewModel extends ViewModel {
         });
     }
 
+
+    public void searchTv(ApiInterface mApiInterface, String query) {
+
+        Call<GetTv> kontakCall = mApiInterface.searchTv(API_KEY, "en-US",query);
+        kontakCall.enqueue(new Callback<GetTv>() {
+            @Override
+            public void onResponse(Call<GetTv> call, Response<GetTv> response) {
+
+                List<Tv> list_tvs;
+                list_tvs = response.body().getListTv();
+                listTv.postValue(list_tvs);
+            }
+
+            @Override
+            public void onFailure(Call<GetTv> call, Throwable t) {
+                Log.e("Retrofit Get", t.toString());
+            }
+        });
+    }
+
     public LiveData<List<Tv>> getTvs() {
         return listTv;
     }
@@ -75,7 +95,7 @@ public class MainViewModel extends ViewModel {
 
     public void searchFilm(ApiInterface mApiInterface, String query) {
 
-        Call<GetFilm> kontakCall = mApiInterface.cariFilm(API_KEY, "en-US",query);
+        Call<GetFilm> kontakCall = mApiInterface.searchMovie(API_KEY, "en-US",query);
         kontakCall.enqueue(new Callback<GetFilm>() {
             @Override
             public void onResponse(Call<GetFilm> call, Response<GetFilm> response) {

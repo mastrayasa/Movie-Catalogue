@@ -10,13 +10,13 @@ public interface ApiInterface {
     Call<GetFilm> getFilm( @Query("api_key") String apiKey, @Query("language") String Language);
 
     @GET("search/movie")
-    Call<GetFilm> cariFilm(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
+    Call<GetFilm> searchMovie(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
 
     @GET("discover/tv")
     Call<GetTv> getTv(@Query("api_key") String apiKey, @Query("language") String Language);
 
     @GET("search/tv")
-    Call<GetTv> cariTv(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
+    Call<GetTv> searchTv(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
 
 
 }
