@@ -1,9 +1,14 @@
 package com.dicoding.picodiploma.academy.database;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 
 public class DatabaseContract {
+
+    private static final String SCHEME = "content";
+    public static final String AUTHORITY = "com.dicoding.picodiploma.academy";
 
     static final class MovieColumns implements BaseColumns {
 
@@ -16,6 +21,11 @@ public class DatabaseContract {
         static String poster_path = "poster_path";
         static String original_title = "original_title";
         static String backdrop_path = "backdrop_path";
+
+        public static final Uri CONTENT_URI = new Uri.Builder().scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath(TABLE_MOVIE)
+                .build();
     }
 
 
@@ -30,5 +40,16 @@ public class DatabaseContract {
         static String poster_path = "poster_path";
         static String original_name = "original_name";
         static String backdrop_path = "backdrop_path";
+    }
+
+
+    public static String getColumnString(Cursor cursor, String columnName) {
+        return cursor.getString(cursor.getColumnIndex(columnName));
+    }
+    public static int getColumnInt(Cursor cursor, String columnName) {
+        return cursor.getInt(cursor.getColumnIndex(columnName));
+    }
+    public static long getColumnLong(Cursor cursor, String columnName) {
+        return cursor.getLong(cursor.getColumnIndex(columnName));
     }
 }

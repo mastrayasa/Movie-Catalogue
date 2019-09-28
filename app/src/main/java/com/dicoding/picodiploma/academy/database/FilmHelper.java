@@ -43,6 +43,28 @@ public class FilmHelper {
             database.close();
     }
 
+
+
+    public Cursor queryByIdProvider(String id) {
+        return database.query(DATABASE_TABLE, null
+                , DatabaseContract.MovieColumns._ID + " = ?"
+                , new String[]{id}
+                , null
+                , null
+                , null
+                , null);
+    }
+
+    public Cursor queryProvider() {
+        return database.query(DATABASE_TABLE
+                , null
+                , null
+                , null
+                , null
+                , null
+                , DatabaseContract.MovieColumns._ID + " ASC");
+    }
+
     public boolean isFavorite(String id){
 
         boolean a = false;
@@ -136,6 +158,18 @@ public class FilmHelper {
 
     public int delete(int id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.MovieColumns._ID + " = '" + id + "'", null);
+    }
+
+    public long insertProvider(ContentValues values) {
+        return database.insert(DATABASE_TABLE, null, values);
+    }
+
+    public int updateProvider(String id, ContentValues values) {
+        return database.update(DATABASE_TABLE, values, DatabaseContract.MovieColumns._ID + " = ?", new String[]{id});
+    }
+
+    public int deleteProvider(String id) {
+        return database.delete(DATABASE_TABLE, DatabaseContract.MovieColumns._ID + " = ?", new String[]{id});
     }
 }
 
