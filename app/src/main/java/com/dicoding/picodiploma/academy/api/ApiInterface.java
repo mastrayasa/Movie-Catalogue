@@ -12,5 +12,11 @@ public interface ApiInterface {
     @GET("discover/tv")
     Call<GetTv> getTv(@Query("api_key") String apiKey, @Query("language") String Language);
 
+    @GET("search/movie")
+    Call<GetTv> cariFilm(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
+
+    @GET("search/tv")
+    Call<GetTv> cariTv(@Query("api_key") String apiKey, @Query("language") String Language, @Query("query") String query);
+
 
 }
