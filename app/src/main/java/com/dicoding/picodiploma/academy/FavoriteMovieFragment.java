@@ -1,7 +1,12 @@
 package com.dicoding.picodiploma.academy;
 
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,27 +21,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dicoding.picodiploma.academy.adapter.FilmAdapter;
 import com.dicoding.picodiploma.academy.database.FilmHelper;
+import com.dicoding.picodiploma.academy.database.FilmProvider;
 import com.dicoding.picodiploma.academy.entitas.Film;
 import com.dicoding.picodiploma.academy.ui.main.MainViewModel;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.AUTHORITY;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.TABLE_MOVIE;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteMovieFragment extends Fragment implements FilmAdapter.AdapterOnClickHandler {
+public class FavoriteMovieFragment extends Fragment implements FilmAdapter.AdapterOnClickHandler, LoadFilmsCallback  {
 
-    private FilmHelper filmHelper;
+   // private FilmHelper filmHelper;
     private Film film;
     FilmAdapter filmAdapter;
     private RecyclerView rvFilm;
     private ProgressBar progressBar;
     private TextView not_found;
-
+    private ContentResolver resolver;
     private MainViewModel mainViewModel;
 
 
@@ -56,8 +69,8 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        filmHelper = FilmHelper.getInstance(getContext());
-        filmHelper.open();
+       // filmHelper = FilmHelper.getInstance(getContext());
+       // filmHelper.open();
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_favorite_movie, container, false);
@@ -74,9 +87,15 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
 
         showLoading(true);
 
+        resolver = getActivity().getContentResolver();
+
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mainViewModel.getFilms().observe(this, getFilm);
-        mainViewModel.setListFilmFavorite(filmHelper);
+       mainViewModel.setListFilmFavorite(resolver);
+
+       // resolver = getActivity().getContentResolver();
+
+        //new getData(getActivity(), this).execute();
 
         return rootView;
     }
@@ -155,9 +174,73 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
 
     @Override
     public void onDeleteItem(int position) {
-        Film deleteItem = filmAdapter.getItem(position);
-        filmHelper.delete( Integer.parseInt(deleteItem.getId()));
 
-        mainViewModel.setListFilmFavorite(filmHelper);
+        Film filmDelete = filmAdapter.getItem(position);
+
+
+        resolver.delete(  new Uri.Builder().scheme("content")
+                .authority(AUTHORITY)
+                .appendPath(TABLE_MOVIE)
+                .appendPath(filmDelete.getId())
+                .build()   , null ,null);
+        Toast.makeText(getActivity(), "Satu item berhasil dihapus", Toast.LENGTH_SHORT).show();
+
+        new getData(getActivity(), this).execute();
+
+
     }
+
+    @Override
+    public void postExecute(Cursor films) {
+        final ArrayList<Film> listFilms = mapCursorToArrayList(films);
+        if (listFilms.size() > 0) {
+            filmAdapter.setData(listFilms);
+
+            ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                    showSelectedFilm(listFilms.get(position));
+                }
+            });
+
+
+
+
+            /*if(listFilms.size() == 0){
+                Log.e("TAG", "Tidak ada data");
+
+            }*/
+
+
+        } else {
+            DataNotFound(true);
+            Toast.makeText(getActivity(), "Tidak Ada data saat ini", Toast.LENGTH_SHORT).show();
+        }
+
+        showLoading(false);
+    }
+
+    private static class getData extends AsyncTask<Void, Void, Cursor> {
+
+        private final WeakReference<Context> weakContext;
+        private final WeakReference<LoadFilmsCallback> weakCallback;
+
+        private getData(Context context, LoadFilmsCallback callback) {
+            weakContext = new WeakReference<>(context);
+            weakCallback = new WeakReference<>(callback);
+        }
+
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+            Log.e("TAGGG", "doInBackground: " );
+            return weakContext.get().getContentResolver().query(CONTENT_URI, null, null, null, null);
+        }
+        @Override
+        protected void onPostExecute(Cursor data) {
+            super.onPostExecute(data);
+            weakCallback.get().postExecute(data);
+        }
+    }
+
+
 }

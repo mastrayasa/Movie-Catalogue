@@ -1,5 +1,7 @@
 package com.dicoding.picodiploma.academy.ui.main;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -21,6 +23,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayList;
 
 public class MainViewModel extends ViewModel {
 
@@ -131,9 +136,9 @@ public class MainViewModel extends ViewModel {
     }
 
 
-    public void setListFilmFavorite(FilmHelper filmHelper) {
-
-        listFilm.postValue(filmHelper.getAll());
+    public void setListFilmFavorite(ContentResolver resolver) {
+        Cursor films = resolver.query(CONTENT_URI, null, null, null, null);
+        listFilm.postValue(mapCursorToArrayList(films));
 
     }
 

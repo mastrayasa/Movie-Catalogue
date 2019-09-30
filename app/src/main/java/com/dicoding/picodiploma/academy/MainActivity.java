@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
+
+    private AlarmReceiver alarmReceiver;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -61,6 +64,17 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null){
             navigation.setSelectedItemId(R.id.navigation_home);
         }
+
+        alarmReceiver = new AlarmReceiver();
+
+        String TimeAlarm = "17:26";
+        alarmReceiver.setRepeatingAlarm(this, AlarmReceiver.TYPE_REPEATING,TimeAlarm , "Kami rindu anda");
+       /* if(alarmReceiver.isAlarmSet(this,TimeAlarm)){
+            alarmReceiver.setRepeatingAlarm(this, AlarmReceiver.TYPE_REPEATING,TimeAlarm , "Kami rindu anda");
+        }else{
+            Toast.makeText(this, "sudah di set : " + TimeAlarm, Toast.LENGTH_SHORT).show();
+        }*/
+
     }
 
     /*@Override

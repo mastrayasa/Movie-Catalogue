@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,16 +38,22 @@ public class FilmProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
+
+
+        Log.e("Cursor", "luar: " );
         filmHelper.open();
         Cursor cursor;
         switch (sUriMatcher.match(uri)) {
             case MOVIE:
+                Log.e("Cursor", "MOVIE: " );
                 cursor = filmHelper.queryProvider();
                 break;
             case MOVIE_ID:
+                Log.e("Cursor", "MOVIE_ID: " );
                 cursor = filmHelper.queryByIdProvider(uri.getLastPathSegment());
                 break;
             default:
+                Log.e("Cursor", "default: " );
                 cursor = null;
                 break;
         }
@@ -67,7 +74,21 @@ public class FilmProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+
+        int deleted;
+
+        switch (sUriMatcher.match(uri)) {
+            case MOVIE_ID:
+                Log.e("Tag Hapus", "3" );
+                deleted = filmHelper.deleteProvider(uri.getLastPathSegment());
+                break;
+            default:
+                Log.e("Tag Hapus", "1" + s );
+                deleted = 0;
+                break;
+        }
+
+        return deleted;
     }
 
     @Override
