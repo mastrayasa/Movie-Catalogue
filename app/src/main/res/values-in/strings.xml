@@ -11,4 +11,20 @@
     <string name="title_favorite">Kesukaan</string>
     <string name="data_not_found_movie">Data filem kesukaan tidak ada</string>
     <string name="data_not_found_tv">Data serial tv kesukaan tidak ada</string>
+    <string name="add_widget">Tambah Widget</string>
+    <string name="alarm_header">Pengingat</string>
+    <string name="appwidget_text">Film Kesukaan</string>
+    <string name="daily_reminder_off">Pengingat harian mati</string>
+    <string name="daily_reminder_on">Pengingat hidup setiap jam 07:00</string>
+    <string name="daily_reminder_title">Pengingat harian</string>
+    <string name="empty_text">Data tidak ada</string>
+    <string name="has_been_release_today">sudah rilis hari ini</string>
+    <string name="messages_header">Pesan</string>
+    <string name="release_reminder_off">Pengingat hari ini mati</string>
+    <string name="release_reminder_on">Dapatkan info film rilis hari ini</string>
+    <string name="release_title">Pemberitahuan Rilis</string>
+    <string name="search_hint">Masukkan kata</string>
+    <string name="title_activity_settings">Pengaturan</string>
+    <string name="title_settings">Pengaturan</string>
+    <string name="missing_you">merindukan mu!</string>
 </resources>

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Submission 5</string>
-    <string name="language">Bahasa</string>
+    <string name="language">Language</string>
     <string name="title_movies">Movies</string>
     <string name="title_tv_show">Tv Show</string>
     <string name="title_detail_tv_show">Detail Tv Show</string>
@@ -12,11 +12,37 @@
     <string name="tab_tv">Tv Show</string>
     <string name="data_not_found_movie">Not found data Movie</string>
     <string name="data_not_found_tv">Not Found data Tv</string>
-    <string name="search_hint">Masukkan kata</string>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <string name="appwidget_text">Favorite Movie</string>
     <string name="add_widget">Add widget</string>
     <string name="empty_text">Data not found</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>-->
+
+    <!-- Messages Preferences
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>-->
+
+    <!-- Sync Preferences
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>-->
+    <string name="title_settings">Settings</string>
+    <string name="alarm_header">Reminder</string>
+    <string name="release_title">Release Reminder</string>
+    <string name="daily_reminder_title">Daily Reminder</string>
+    <string name="daily_reminder_on">Reminder every 07.00</string>
+    <string name="daily_reminder_off">Daily Remender Off</string>
+    <string name="has_been_release_today" type="id">has been release today!</string>
+    <string name="release_reminder_on">Get info for Release Movie Today on 08:00</string>
+    <string name="release_reminder_off">Release Today is Off</string>
+    <string name="search_hint">Type a keyword</string>
+    <string name="missing_you">missing you!</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.reminder;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -17,41 +17,56 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.dicoding.picodiploma.academy.BuildConfig;
+import com.dicoding.picodiploma.academy.R;
+import com.dicoding.picodiploma.academy.api.ApiClient;
+import com.dicoding.picodiploma.academy.api.ApiInterface;
+import com.dicoding.picodiploma.academy.api.GetFilm;
+import com.dicoding.picodiploma.academy.entitas.Film;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class AlarmReceiver extends BroadcastReceiver {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ReleaseReminder extends BroadcastReceiver {
     public static final String TYPE_ONE_TIME = "OneTimeAlarm";
     public static final String TYPE_REPEATING = "Catalogie Muvie";
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_TYPE = "type";
+    private static final String API_KEY = BuildConfig.TMDB_API_KEY;
+
+    private final static String TIME_FORMAT = "HH:mm";
 
     // Siapkan 2 id untuk 2 macam alarm, onetime dna repeating
     private final static int ID_ONETIME = 100;
     private final static int ID_REPEATING = 101;
 
-    public AlarmReceiver() {
+    ApiInterface mApiInterface;
+
+    public ReleaseReminder() {
+        Log.e("ReleaseReminder", "123");
+        mApiInterface = ApiClient.getClient().create(ApiInterface.class);
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, Intent intent) {
         String type = intent.getStringExtra(EXTRA_TYPE);
         String message = intent.getStringExtra(EXTRA_MESSAGE);
 
         String title = type.equalsIgnoreCase(TYPE_ONE_TIME) ? TYPE_ONE_TIME : TYPE_REPEATING;
-        int notifId = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
 
         showToast(context, title, message);
-
-        //Jika Anda ingin menampilkan dengan Notif anda bisa menghilangkan komentar pada baris dibawah ini.
-        showAlarmNotification(context, title, message, notifId);
     }
 
     // Gunakan metode ini untuk menampilkan toast
-
     private void showToast(Context context, String title, String message) {
         Toast.makeText(context, title + " : " + message, Toast.LENGTH_LONG).show();
     }
@@ -100,47 +115,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     }
 
-    // Metode ini digunakan untuk menjalankan alarm one time
-
-    public void setOneTimeAlarm(Context context, String type, String date, String time, String message) {
-
-        // Validasi inputan date dan time terlebih dahulu
-        if (isDateInvalid(date, DATE_FORMAT) || isDateInvalid(time, TIME_FORMAT)) return;
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        intent.putExtra(EXTRA_TYPE, type);
-
-        Log.e("ONE TIME", date + " " + time);
-        String dateArray[] = date.split("-");
-        String timeArray[] = time.split(":");
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, Integer.parseInt(dateArray[0]));
-        calendar.set(Calendar.MONTH, Integer.parseInt(dateArray[1]) - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[2]));
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]));
-        calendar.set(Calendar.SECOND, 0);
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ID_ONETIME, intent, 0);
-        if (alarmManager != null) {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
-
-        Toast.makeText(context, "One time alarm set up", Toast.LENGTH_SHORT).show();
-    }
 
     // Metode ini digunakan untuk menjalankan alarm repeating
-    public void setRepeatingAlarm(Context context, String type, String time, String message) {
+    public void setRepeatingAlarm(final Context context, String type, String time) {
 
         // Validasi inputan waktu terlebih dahulu
         if (isDateInvalid(time, TIME_FORMAT)) return;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
+        Intent intent = new Intent(context, DailyReminder.class);
         intent.putExtra(EXTRA_TYPE, type);
 
         String timeArray[] = time.split(":");
@@ -152,19 +135,48 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, 0);
         if (alarmManager != null) {
-            Log.e("SET ALARM", "Berhasil" );
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        }else{
-            Log.e("SET ALARM", "GAGAL" );
         }
 
-        Toast.makeText(context, "Repeating alarm set up : " +time, Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadReleaseFilms(final Context context){
+
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        Log.e("TGL", date);
+
+        Call<GetFilm> FilmsCall = mApiInterface.getFilmRelease(API_KEY, date,date);
+        FilmsCall.enqueue(new Callback<GetFilm>() {
+            @Override
+            public void onResponse(Call<GetFilm> call, Response<GetFilm> response) {
+
+                List<Film> list_films;
+                list_films = response.body().getListFilm();
+
+                if(list_films.size() > 0){
+
+                    for (int i=0; i<list_films.size(); i++) {
+
+                        Film film =list_films.get(i);
+                        showAlarmNotification(context, film.getTitle(),film.getTitle() + " " +context.getResources().getString(R.string.has_been_release_today),Integer.parseInt( film.getId()));
+
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<GetFilm> call, Throwable t) {
+                Log.e("Retrofit Get", t.toString());
+            }
+        });
     }
 
 
     public void cancelAlarm(Context context, String type) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
+        Intent intent = new Intent(context, DailyReminder.class);
         int requestCode = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         pendingIntent.cancel();
@@ -172,21 +184,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
         }
-
-        Toast.makeText(context, "Repeating alarm dibatalkan", Toast.LENGTH_SHORT).show();
     }
 
 
-    // Gunakan metode ini untuk mengecek apakah alarm tersebut sudah terdaftar di alarm manager
-    public boolean isAlarmSet(Context context, String type) {
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        int requestCode = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
 
-        return PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE) != null;
-    }
-
-    private final static String DATE_FORMAT = "yyyy-MM-dd";
-    private final static String TIME_FORMAT = "HH:mm";
 
     // Metode ini digunakan untuk validasi date dan time
     public boolean isDateInvalid(String date, String format) {
@@ -199,4 +200,5 @@ public class AlarmReceiver extends BroadcastReceiver {
             return true;
         }
     }
+
 }

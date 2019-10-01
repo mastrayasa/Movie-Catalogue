@@ -13,12 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.dicoding.picodiploma.academy.R;
+import com.dicoding.picodiploma.academy.entitas.Tv;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
 
-    private AlarmReceiver alarmReceiver;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -48,10 +49,18 @@ public class MainActivity extends AppCompatActivity {
                             .replace(R.id.container_layout, fragment, fragment.getClass().getSimpleName())
                             .commit();
                     return true;
+                case R.id.navigation_settings:
+                     openSettingsPage();
+                    return true;
             }
             return false;
         }
     };
+
+    private void openSettingsPage(){
+        Intent moveWithObjectIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(moveWithObjectIntent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +74,9 @@ public class MainActivity extends AppCompatActivity {
             navigation.setSelectedItemId(R.id.navigation_home);
         }
 
-        alarmReceiver = new AlarmReceiver();
 
-        String TimeAlarm = "17:26";
-        alarmReceiver.setRepeatingAlarm(this, AlarmReceiver.TYPE_REPEATING,TimeAlarm , "Kami rindu anda");
-       /* if(alarmReceiver.isAlarmSet(this,TimeAlarm)){
-            alarmReceiver.setRepeatingAlarm(this, AlarmReceiver.TYPE_REPEATING,TimeAlarm , "Kami rindu anda");
-        }else{
-            Toast.makeText(this, "sudah di set : " + TimeAlarm, Toast.LENGTH_SHORT).show();
-        }*/
+
+
 
     }
 

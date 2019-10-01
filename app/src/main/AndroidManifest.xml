@@ -13,6 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
+
         <receiver android:name=".MovieFavoriteWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -41,14 +45,14 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <provider
-            android:authorities="com.dicoding.picodiploma.academy"
             android:name=".database.FilmProvider"
+            android:authorities="com.dicoding.picodiploma.academy"
             android:exported="true"
             android:readPermission="com.dicoding.mynotesapp.READ_DATABASE"
             android:writePermission="com.dicoding.mynotesapp.WRITE_DATABASE" />
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".reminder.DailyReminder"
             android:enabled="true"
             android:exported="true" />
     </application>
