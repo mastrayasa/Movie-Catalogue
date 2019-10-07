@@ -38,7 +38,7 @@ import retrofit2.Response;
 
 public class ReleaseReminder extends BroadcastReceiver {
     public static final String TYPE_ONE_TIME = "OneTimeAlarm";
-    public static final String TYPE_REPEATING = "Catalogie Muvie";
+    public static final String TYPE_REPEATING = "Release Reminder";
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_TYPE = "type";
     private static final String API_KEY = BuildConfig.TMDB_API_KEY;
@@ -46,13 +46,13 @@ public class ReleaseReminder extends BroadcastReceiver {
     private final static String TIME_FORMAT = "HH:mm";
 
     // Siapkan 2 id untuk 2 macam alarm, onetime dna repeating
-    private final static int ID_ONETIME = 100;
-    private final static int ID_REPEATING = 101;
+    private final static int ID_ONETIME = 102;
+    private final static int ID_REPEATING = 103;
 
     ApiInterface mApiInterface;
 
     public ReleaseReminder() {
-        Log.e("ReleaseReminder", "123");
+        Log.e("ReleaseReminder", "start");
         mApiInterface = ApiClient.getClient().create(ApiInterface.class);
     }
 
@@ -60,10 +60,14 @@ public class ReleaseReminder extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         String type = intent.getStringExtra(EXTRA_TYPE);
         String message = intent.getStringExtra(EXTRA_MESSAGE);
-
         String title = type.equalsIgnoreCase(TYPE_ONE_TIME) ? TYPE_ONE_TIME : TYPE_REPEATING;
-
+        int notifId = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
         showToast(context, title, message);
+
+        loadReleaseFilms(context);
+
+
+        Log.e("ReleaseReminder", "onReceive ID=" + notifId);
     }
 
     // Gunakan metode ini untuk menampilkan toast
@@ -123,7 +127,8 @@ public class ReleaseReminder extends BroadcastReceiver {
         if (isDateInvalid(time, TIME_FORMAT)) return;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, DailyReminder.class);
+        Intent intent = new Intent(context, ReleaseReminder.class);
+        intent.putExtra(EXTRA_MESSAGE, "Release Reminder");
         intent.putExtra(EXTRA_TYPE, type);
 
         String timeArray[] = time.split(":");
@@ -135,7 +140,10 @@ public class ReleaseReminder extends BroadcastReceiver {
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, 0);
         if (alarmManager != null) {
+            Log.e("SET ReleaseReminder", "Berhasil" );
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        }else{
+            Log.e("SET ReleaseReminder", "GAGAL" );
         }
 
     }
@@ -176,13 +184,14 @@ public class ReleaseReminder extends BroadcastReceiver {
 
     public void cancelAlarm(Context context, String type) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, DailyReminder.class);
+        Intent intent = new Intent(context, ReleaseReminder.class);
         int requestCode = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
         pendingIntent.cancel();
 
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
+            Log.e("Unset ReleaseReminder", "Berhasil" );
         }
     }
 

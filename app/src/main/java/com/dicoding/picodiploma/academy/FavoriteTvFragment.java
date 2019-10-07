@@ -1,7 +1,12 @@
 package com.dicoding.picodiploma.academy;
 
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,21 +21,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dicoding.picodiploma.academy.adapter.TvAdapter;
 import com.dicoding.picodiploma.academy.database.TvHelper;
+import com.dicoding.picodiploma.academy.entitas.Film;
 import com.dicoding.picodiploma.academy.entitas.Tv;
 import com.dicoding.picodiploma.academy.ui.main.MainViewModel;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.AUTHORITY;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.TABLE_MOVIE;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.TvColumns.CONTENT_URI_TV;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.TvColumns.TABLE_TV;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListFilms;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListTvs;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnClickHandler {
+public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnClickHandler , LoadFilmsCallback {
 
-    private TvHelper tvHelper;
+    private ContentResolver resolver;
     private RecyclerView rvTv;
     private ProgressBar progressBar;
     private TextView not_found;
@@ -46,8 +63,6 @@ public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        tvHelper = TvHelper.getInstance(getContext());
-        tvHelper.open();
 
 
         // Inflate the layout for this fragment
@@ -65,9 +80,11 @@ public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnC
 
         showLoading(true);
 
+        resolver = getActivity().getContentResolver();
+
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         mainViewModel.getTvs().observe(this, getTv);
-        mainViewModel.setListTvFavorite(tvHelper);
+        mainViewModel.setListTvFavorite(resolver);
 
         return rootView;
     }
@@ -93,6 +110,8 @@ public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnC
                     DataNotFound(true);
                 }
 
+            }else{
+                DataNotFound(true);
             }
 
             showLoading(false);
@@ -128,14 +147,67 @@ public class FavoriteTvFragment extends Fragment implements TvAdapter.AdapterOnC
         }
     }
 
+
+
     @Override
     public void onDeleteItem(int position) {
-        Log.e("delete", position + "" );
+        Tv tvDelete = tvAdapter.getItem(position);
 
-        Tv deleteItem = tvAdapter.getItem(position);
-        tvHelper.delete( Integer.parseInt(deleteItem.getId()));
 
-        mainViewModel.setListTvFavorite(tvHelper);
+        resolver.delete(  new Uri.Builder().scheme("content")
+                .authority(AUTHORITY)
+                .appendPath(TABLE_TV)
+                .appendPath(tvDelete.getId())
+                .build()   , null ,null);
+        Toast.makeText(getActivity(), "Satu item berhasil dihapus", Toast.LENGTH_SHORT).show();
+
+        new FavoriteTvFragment.getData(getActivity(), this).execute();
+    }
+
+    @Override
+    public void postExecute(Cursor tvs) {
+        final ArrayList<Tv> listTv = mapCursorToArrayListTvs(tvs);
+        if (listTv.size() > 0) {
+            tvAdapter.setData(listTv);
+
+            ItemClickSupport.addTo(rvTv).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                    showSelectedFilm(listTv.get(position));
+                }
+            });
+
+
+
+        } else {
+            DataNotFound(true);
+            Toast.makeText(getActivity(), "Tidak Ada data saat ini", Toast.LENGTH_SHORT).show();
+        }
+
+        showLoading(false);
+    }
+
+
+    private static class getData extends AsyncTask<Void, Void, Cursor> {
+
+        private final WeakReference<Context> weakContext;
+        private final WeakReference<LoadFilmsCallback> weakCallback;
+
+        private getData(Context context, LoadFilmsCallback callback) {
+            weakContext = new WeakReference<>(context);
+            weakCallback = new WeakReference<>(callback);
+        }
+
+        @Override
+        protected Cursor doInBackground(Void... voids) {
+            Log.e("TAGGG", "doInBackground: " );
+            return weakContext.get().getContentResolver().query(CONTENT_URI_TV, null, null, null, null);
+        }
+        @Override
+        protected void onPostExecute(Cursor data) {
+            super.onPostExecute(data);
+            weakCallback.get().postExecute(data);
+        }
     }
 
 }

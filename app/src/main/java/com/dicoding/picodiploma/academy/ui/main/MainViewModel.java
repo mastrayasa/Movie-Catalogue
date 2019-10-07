@@ -25,7 +25,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
-import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayList;
+import static com.dicoding.picodiploma.academy.database.DatabaseContract.TvColumns.CONTENT_URI_TV;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListFilms;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListTvs;
 
 public class MainViewModel extends ViewModel {
 
@@ -118,7 +120,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void clearMovie(){
-        //List<Film> list_films = new ArrayList<Film>();
         listFilm.postValue(null);
     }
 
@@ -129,16 +130,21 @@ public class MainViewModel extends ViewModel {
     }
 
 
-    public void setListTvFavorite(TvHelper tvHelper) {
+    public void setListTvFavorite(ContentResolver resolver) {
+        Log.e("setListTvFavorite", CONTENT_URI_TV.toString());
+        Cursor tvs = resolver.query(CONTENT_URI_TV, null, null, null, null);
+        if(tvs != null){
+            listTv.postValue(mapCursorToArrayListTvs(tvs));
+        }
 
-        listTv.postValue(tvHelper.getAll());
 
     }
 
 
     public void setListFilmFavorite(ContentResolver resolver) {
+        Log.e("setListFilmFavorite", CONTENT_URI.toString());
         Cursor films = resolver.query(CONTENT_URI, null, null, null, null);
-        listFilm.postValue(mapCursorToArrayList(films));
+        listFilm.postValue(mapCursorToArrayListFilms(films));
 
     }
 

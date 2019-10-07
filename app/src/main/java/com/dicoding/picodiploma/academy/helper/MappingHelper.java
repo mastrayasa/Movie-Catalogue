@@ -4,12 +4,13 @@ import android.database.Cursor;
 
 import com.dicoding.picodiploma.academy.database.DatabaseContract;
 import com.dicoding.picodiploma.academy.entitas.Film;
+import com.dicoding.picodiploma.academy.entitas.Tv;
 
 import java.util.ArrayList;
 
 public class MappingHelper {
 
-    public static ArrayList<Film> mapCursorToArrayList(Cursor cursor) {
+    public static ArrayList<Film> mapCursorToArrayListFilms(Cursor cursor) {
         ArrayList<Film> filmArrayList = new ArrayList<>();
         Film film;
 
@@ -30,5 +31,32 @@ public class MappingHelper {
         }
 
         return filmArrayList;
+    }
+
+
+    public static ArrayList<Tv> mapCursorToArrayListTvs(Cursor cursor) {
+        ArrayList<Tv> tvArrayList = new ArrayList<>();
+        Tv tv;
+        try {
+            while (cursor.moveToNext()) {
+                tv = new Tv();
+                tv.setId(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns._ID)));
+                tv.setName(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.name)));
+                tv.setOverview(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.overview)));
+                tv.setRelease_date(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.release_date)));
+                tv.setVote_average(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.vote_average)));
+                tv.setPopularity(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.popularity)));
+                tv.setOriginal_name(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.original_name)));
+                tv.setBackdrop_path(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.backdrop_path)));
+                tv.setPoster_path(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.TvColumns.poster_path)));
+
+
+                tvArrayList.add(tv);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return tvArrayList;
     }
 }

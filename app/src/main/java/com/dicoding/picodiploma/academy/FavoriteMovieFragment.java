@@ -36,15 +36,13 @@ import java.util.List;
 import static com.dicoding.picodiploma.academy.database.DatabaseContract.AUTHORITY;
 import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
 import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.TABLE_MOVIE;
-import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayList;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListFilms;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class FavoriteMovieFragment extends Fragment implements FilmAdapter.AdapterOnClickHandler, LoadFilmsCallback  {
 
-   // private FilmHelper filmHelper;
-    private Film film;
     FilmAdapter filmAdapter;
     private RecyclerView rvFilm;
     private ProgressBar progressBar;
@@ -52,25 +50,14 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
     private ContentResolver resolver;
     private MainViewModel mainViewModel;
 
-
     public FavoriteMovieFragment() {
 
     }
-
-   /* public static FavoriteMovieFragment newInstance() {
-        FavoriteMovieFragment fragment = new FavoriteMovieFragment();
-        Bundle bundle = new Bundle();
-        fragment.setArguments(bundle);
-        return fragment;
-    }*/
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-       // filmHelper = FilmHelper.getInstance(getContext());
-       // filmHelper.open();
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_favorite_movie, container, false);
@@ -93,10 +80,6 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
         mainViewModel.getFilms().observe(this, getFilm);
        mainViewModel.setListFilmFavorite(resolver);
 
-       // resolver = getActivity().getContentResolver();
-
-        //new getData(getActivity(), this).execute();
-
         return rootView;
     }
 
@@ -117,15 +100,14 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
                     }
                 });
 
-
-
-
                 if(list_films.size() == 0){
                     Log.e("TAG", "Tidak ada data");
                     DataNotFound(true);
                 }
 
 
+            }else{
+                DataNotFound(true);
             }
 
             showLoading(false);
@@ -136,13 +118,6 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
 
 
     };
-
-   /* private void deleteItem(int position){
-        Film theRemovedItem = list_films.get(position);
-        // remove your item from data base
-        mFilmList.remove(position);  // remove the item from list
-        notifyItemRemoved(position);
-    }*/
 
 
     private void showSelectedFilm(Film film){
@@ -192,7 +167,7 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
 
     @Override
     public void postExecute(Cursor films) {
-        final ArrayList<Film> listFilms = mapCursorToArrayList(films);
+        final ArrayList<Film> listFilms = mapCursorToArrayListFilms(films);
         if (listFilms.size() > 0) {
             filmAdapter.setData(listFilms);
 
@@ -203,13 +178,6 @@ public class FavoriteMovieFragment extends Fragment implements FilmAdapter.Adapt
                 }
             });
 
-
-
-
-            /*if(listFilms.size() == 0){
-                Log.e("TAG", "Tidak ada data");
-
-            }*/
 
 
         } else {

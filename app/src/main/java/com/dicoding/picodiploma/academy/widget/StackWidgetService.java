@@ -1,4 +1,4 @@
-package com.dicoding.picodiploma.academy;
+package com.dicoding.picodiploma.academy.widget;
 
 import android.content.Intent;
 import android.widget.RemoteViewsService;

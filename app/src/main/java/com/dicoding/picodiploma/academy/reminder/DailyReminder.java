@@ -18,12 +18,22 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.dicoding.picodiploma.academy.R;
+import com.dicoding.picodiploma.academy.api.ApiClient;
+import com.dicoding.picodiploma.academy.api.ApiInterface;
+import com.dicoding.picodiploma.academy.api.GetFilm;
+import com.dicoding.picodiploma.academy.entitas.Film;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DailyReminder extends BroadcastReceiver {
     public static final String TYPE_ONE_TIME = "OneTimeAlarm";
@@ -35,7 +45,11 @@ public class DailyReminder extends BroadcastReceiver {
     private final static int ID_ONETIME = 100;
     private final static int ID_REPEATING = 101;
 
+    ApiInterface mApiInterface;
+
     public DailyReminder() {
+        Log.e("DailyReminder", "start");
+        mApiInterface = ApiClient.getClient().create(ApiInterface.class);
     }
 
     @Override
@@ -46,10 +60,17 @@ public class DailyReminder extends BroadcastReceiver {
         String title = type.equalsIgnoreCase(TYPE_ONE_TIME) ? TYPE_ONE_TIME : TYPE_REPEATING;
         int notifId = type.equalsIgnoreCase(TYPE_ONE_TIME) ? ID_ONETIME : ID_REPEATING;
 
-        showToast(context, title, message);
+        //showToast(context, title, message);
 
         //Jika Anda ingin menampilkan dengan Notif anda bisa menghilangkan komentar pada baris dibawah ini.
         showAlarmNotification(context, title, message, notifId);
+
+        Log.e("DailyReminder", "onReceive ID=" + notifId);
+
+
+
+
+
     }
 
     // Gunakan metode ini untuk menampilkan toast
@@ -111,7 +132,7 @@ public class DailyReminder extends BroadcastReceiver {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, DailyReminder.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
+        intent.putExtra(EXTRA_MESSAGE, TYPE_REPEATING + " " + message);
         intent.putExtra(EXTRA_TYPE, type);
 
         String timeArray[] = time.split(":");
@@ -123,9 +144,10 @@ public class DailyReminder extends BroadcastReceiver {
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, ID_REPEATING, intent, 0);
         if (alarmManager != null) {
+            Log.e("SET DailyReminder", "Berhasil" );
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }else{
-            Log.e("SET ALARM", "GAGAL" );
+            Log.e("SET DailyReminder", "GAGAL" );
         }
     }
 
@@ -139,6 +161,7 @@ public class DailyReminder extends BroadcastReceiver {
 
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);
+            Log.e("Unset DailyReminder", "Berhasil" );
         }
     }
 
@@ -156,4 +179,7 @@ public class DailyReminder extends BroadcastReceiver {
             return true;
         }
     }
+
+
+
 }

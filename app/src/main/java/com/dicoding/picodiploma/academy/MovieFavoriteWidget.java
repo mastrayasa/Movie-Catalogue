@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.dicoding.picodiploma.academy.widget.StackWidgetService;
+
 /**
  * Implementation of App Widget functionality.
  */

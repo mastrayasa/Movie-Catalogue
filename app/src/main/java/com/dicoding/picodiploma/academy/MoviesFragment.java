@@ -46,10 +46,10 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
     private ProgressBar progressBar;
     FilmAdapter filmAdapter;
     private TextView not_found;
-
     ApiInterface mApiInterface;
-
     private MainViewModel mainViewModel;
+
+    //private List<Film> temp_list_films;
 
     public MoviesFragment() {
         // Required empty public constructor
@@ -92,13 +92,15 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
 
        if (searchManager != null) {
+           Log.e("SEARCH CLOSE", "CLOSE" );
             SearchView searchView = (SearchView) (menu.findItem(R.id.action_search)).getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo( getActivity().getComponentName()));
             searchView.setQueryHint(getResources().getString(R.string.search_hint));
+           searchView.setIconifiedByDefault(true);
+
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    //Toast.makeText(getActivity(), query, Toast.LENGTH_SHORT).show();
                     DataNotFound(false);
                     //mainViewModel.clearMovie();
                     showLoading(true);
@@ -108,13 +110,39 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
                 }
                 @Override
                 public boolean onQueryTextChange(String query) {
-                    //Toast.makeText(getActivity(), query, Toast.LENGTH_SHORT).show();
-                    Log.e("QQQ", query );
+                    //Log.e("change", query );
                     return false;
                 }
 
 
             });
+
+           /*searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+               @Override
+               public boolean onClose() {
+
+                   Log.e("SEARCH CLOSE", "CLOSE" );
+                   filmAdapter.setData(temp_list_films);
+                   filmAdapter.notifyDataSetChanged();
+
+                   ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                       @Override
+                       public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                           showSelectedFilm(temp_list_films.get(position));
+                       }
+                   });
+
+
+                   return false;
+               }
+           });*/
+
+
+
+
+
+
+
 
 
         }
@@ -131,6 +159,7 @@ public class MoviesFragment extends Fragment implements FilmAdapter.AdapterOnCli
             if (list_films != null) {
 
                 filmAdapter.setData(list_films);
+                //temp_list_films = list_films;
 
                 ItemClickSupport.addTo(rvFilm).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override

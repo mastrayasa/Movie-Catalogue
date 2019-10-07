@@ -29,20 +29,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-
-
-         /*sp = PreferenceManager.getDefaultSharedPreferences(this);
-
-        Boolean str=sp.getBoolean("release_remender",false);
-
-        if(sp!=null)
-        {
-            Toast.makeText(this,"String value is "+str,Toast.LENGTH_LONG).show();
-        }
-       else{
-            Toast.makeText(this,"String value is :"+str,Toast.LENGTH_LONG).show();
-        }*/
     }
 
 
@@ -124,11 +110,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         private void setReminderRelease(){
             String TimeAlarm = "08:00";
-            releaseReminder.setRepeatingAlarm(getActivity(), DailyReminder.TYPE_REPEATING,TimeAlarm );
+            releaseReminder.setRepeatingAlarm(getActivity(), ReleaseReminder.TYPE_REPEATING,TimeAlarm );
         }
 
         private void unSetReminderRelease(){
-            releaseReminder.cancelAlarm(getActivity(), DailyReminder.TYPE_REPEATING);
+            releaseReminder.cancelAlarm(getActivity(), ReleaseReminder.TYPE_REPEATING);
         }
     }
 }

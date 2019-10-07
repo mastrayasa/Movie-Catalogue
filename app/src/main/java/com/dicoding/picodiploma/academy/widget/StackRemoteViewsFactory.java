@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dicoding.picodiploma.academy.database.DatabaseContract.MovieColumns.CONTENT_URI;
-import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayList;
+import static com.dicoding.picodiploma.academy.helper.MappingHelper.mapCursorToArrayListFilms;
 
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory{
 
@@ -59,28 +59,12 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
             Log.e("Widget", films.getCount() + " list 2" );
 
-            listFilms = mapCursorToArrayList(films);
+            listFilms = mapCursorToArrayListFilms(films);
 
             Log.e("Widget", listFilms.size() + " list" );
         } finally {
             Binder.restoreCallingIdentity(identityToken);
         }
-
-
-
-
-
-        /*mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));
-        mWidgetItems.add(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.poster_placeholder));*/
 
     }
 
@@ -97,12 +81,9 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     @Override
     public RemoteViews getViewAt(int position) {
 
-
-
         final RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
 
         String image = "https://image.tmdb.org/t/p/w342" + listFilms.get(position).getPoster_path();
-        Log.e("img", image );
 
         try {
             Bitmap bitmap = Glide.with(mContext)

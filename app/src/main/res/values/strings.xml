@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Submission 5</string>
-    <string name="language">Language</string>
     <string name="title_movies">Movies</string>
     <string name="title_tv_show">Tv Show</string>
     <string name="title_detail_tv_show">Detail Tv Show</string>
@@ -16,7 +15,6 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <string name="appwidget_text">Favorite Movie</string>
-    <string name="add_widget">Add widget</string>
     <string name="empty_text">Data not found</string>
     <string name="title_activity_settings">Settings</string>
 

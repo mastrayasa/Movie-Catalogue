@@ -26,20 +26,27 @@ public class DatabaseContract {
                 .authority(AUTHORITY)
                 .appendPath(TABLE_MOVIE)
                 .build();
+
+
     }
 
 
-    static final class TvColumns implements BaseColumns {
+    public static final class TvColumns implements BaseColumns {
 
-        static String TABLE_TV = "tvs";
-        static String name = "name";
-        static String overview = "overview";
-        static String release_date = "release_date";
-        static String vote_average = "vote_average";
-        static String popularity = "popularity";
-        static String poster_path = "poster_path";
-        static String original_name = "original_name";
-        static String backdrop_path = "backdrop_path";
+        public static String TABLE_TV = "tvs";
+        public static String name = "name";
+        public static String overview = "overview";
+        public static String release_date = "release_date";
+        public static String vote_average = "vote_average";
+        public static String popularity = "popularity";
+        public static String poster_path = "poster_path";
+        public static String original_name = "original_name";
+        public static String backdrop_path = "backdrop_path";
+
+        public static final Uri CONTENT_URI_TV = new Uri.Builder().scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath(TABLE_TV)
+                .build();
     }
 
 
